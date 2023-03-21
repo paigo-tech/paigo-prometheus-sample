@@ -1,5 +1,5 @@
 apiVersion: v2
-name: paigo-prometheus-chart
+name: paigo-prometheus-sample-chart
 description: Helm configuration for prometheus to work with Paigo
 keywords:
 - paigo
@@ -8,9 +8,9 @@ keywords:
 type: application
 version: 1.0.0
 appVersion: '1.0.0'
-home: https://github.com/paigo-tech/paigo-prometheus
+home: https://github.com/paigo-tech/paigo-prometheus-sample
 sources:
-    - https://github.com/paigo-tech/paigo-prometheus
+    - https://github.com/paigo-tech/paigo-prometheus-sample
 maintainers:
     - name: danielwasserlauf
       email: daniel.wasserlauf@paigo.tech
