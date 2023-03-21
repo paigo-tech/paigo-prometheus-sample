@@ -11,7 +11,7 @@ Specifically, there are two components to set up:
 
 -   Clone the repository
     ``` sh
-    git clone git@github.com:paigo-tech/paigo-prometheus.git
+    git clone git@github.com:paigo-tech/paigo-prometheus-sample.git
     ````
 -   Replace `<Fill_ME_IN>` with your client ID and secret ID for the Paigo API in the `chart/values.yaml` file
 -   Authenticate with a Kubernetes cluster with the following command so that the deployment of next step will be authenticated. (AWS CLI required).
