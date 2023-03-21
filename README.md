@@ -1,9 +1,6 @@
 # paigo-prometheus
 
-This repository contains an agent which is a specifically configured [prometheus](https://prometheus.io/docs/prometheus/latest/getting_started/) agent, and a deployment of [kube-state-metrics](https://github.com/kubernetes/kube-state-metrics). Following the below instructions you can deploy a paigo agent to a cluster.
-
-Please follow the tagging instructions here: https://docs.paigo.tech/measure-usage-and-collect-data/agent-based-method#required-tagging-schema
-In order to see usage appear in Paigo.
+This repository contains configuration for a [prometheus](https://prometheus.io/docs/prometheus/latest/getting_started/) agent to work with paigo, and a deployment of [kube-state-metrics](https://github.com/kubernetes/kube-state-metrics). Following the below instructions you can deploy a paigo agent to a cluster.
 
 ## Whats deployed with the chart
 
