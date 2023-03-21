@@ -1,25 +1,31 @@
 # paigo-prometheus
 
-This repository contains configuration for a [prometheus](https://prometheus.io/docs/prometheus/latest/getting_started/) agent to work with paigo, and a deployment of [kube-state-metrics](https://github.com/kubernetes/kube-state-metrics). Following the below instructions you can deploy a paigo agent to a cluster.
+This repository contains instructions to use agent-based usage measurement and collection of Paigo.
+Specifically, there are two components to set up:
+- Usage Measurement is done by deploying [Kube State Metrics](https://github.com/kubernetes/kube-state-metrics)
+- Usage Collection is done by deploying [Prometheus Agent](https://prometheus.io/docs/introduction/overview/).
 
-## Whats deployed with the chart
+[Full documentation](https://docs.paigo.tech/measure-usage-and-collect-data/agent-based-method) of agent-based usage measurement and collection.
 
--   Prometheus Agent
--   Kube State metrics
-
-### How to deploy
+### How to Deploy
 
 -   Clone the repository
--   replace `<Fill_ME_IN>` with your client id and secret for the Paigo API in the `values.yaml` file
--   Run `helm upgrade paigo-agent ./chart --install` while authenticated to your kubernetes cluster. To authenticate with a cluster in AWS you can make use of the following command, assuming you have the [AWS CLI](https://aws.amazon.com/cli/) installed.
-
-```sh
-aws eks update-kubeconfig --name your-cluster-name-here
-```
+    ``` sh
+    git clone git@github.com:paigo-tech/paigo-prometheus.git
+    ````
+-   Replace `<Fill_ME_IN>` with your client ID and secret ID for the Paigo API in the `chart/values.yaml` file
+-   Authenticate with a Kubernetes cluster with the following command so that the deployment of next step will be authenticated. (AWS CLI required).
+    ``` sh
+    aws eks update-kubeconfig --name your-cluster-name-here
+    ```
+-   Install agent to the Kubernetes cluster
+    ``` sh
+    helm upgrade paigo-agent ./chart --install
+    ```
 
 
 ### Measuring and Monitoring Usage
-In order to see usage reflected in paigo, pods must contain relevant `customerId`, and `dimensionId` labels.
+In order to see usage reflected in paigo, pods must be labeled with relevant `customerId`, and `dimensionId`.
 
 The following command can be used in order to quickly label pods for testing. 
 ```sh
@@ -28,10 +34,9 @@ kubectl label pods $REPLACE_WITH_POD_NAME \
   paigoCustomerId=$REPLACE_WITH_CUSTOMER_ID
 ```
 
- See our docs for more information on the [required tagging schema](https://docs.paigo.tech/measure-usage-and-collect-data/agent-based-method#required-tagging-schema). 
-
+ See docs for more information on the [required tagging schema](https://docs.paigo.tech/measure-usage-and-collect-data/agent-based-method#required-tagging-schema). 
 
 
 # Support
 
-Reach out to `team@paigo.tech` for support or questions.
+Email [team@paigo.tech](mailto:team@paigo.tech) for support or questions.
