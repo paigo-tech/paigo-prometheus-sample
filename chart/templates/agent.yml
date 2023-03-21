@@ -1,0 +1,81 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: '{{ .Values.namespace }}'
+  labels:
+    name: '{{ .Values.namespace }}'
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+    name: paigo-agent-role
+rules:
+    - apiGroups: ['']
+      resources:
+          - nodes
+          - nodes/proxy
+          - services
+          - endpoints
+          - pods
+      verbs: ['get', 'list', 'watch']
+    - nonResourceURLs: ['/metrics', '/api']
+      verbs: ['get', 'list', 'watch']
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+    name: paigo-agent-service-account
+    namespace: '{{ .Values.namespace }}'
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+    name: paigo-agent-role-binding
+roleRef:
+    apiGroup: rbac.authorization.k8s.io
+    kind: ClusterRole
+    name: paigo-agent-role
+subjects:
+    - kind: ServiceAccount
+      name: paigo-agent-service-account
+      namespace: '{{ .Values.namespace }}'
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: paigo-agent
+    namespace: '{{ .Values.namespace }}'
+spec:
+    replicas: 1
+    selector:
+        matchLabels:
+            name: paigo-agent
+    template:
+        metadata:
+            labels:
+                name: paigo-agent
+        spec:
+            serviceAccountName: paigo-agent-service-account
+            containers:
+                - name: retrieval
+                  image: '{{ .Values.image.repository }}:{{ .Values.image.tag }}'
+                  args:
+                      - '--config.file=/etc/prometheus/prometheus.yml'
+                      - '--storage.tsdb.path=/prometheus'
+                  imagePullPolicy: '{{ .Values.image.pullPolicy }}'
+                  ports:
+                      - containerPort: 9090
+                  volumeMounts:
+                      - name: config-volume
+                        mountPath: /etc/prometheus
+                      - name: clientsecret
+                        mountPath: '/etc/clientsecret'
+                        readOnly: true
+            volumes:
+                - name: config-volume
+                  configMap:
+                      name: paigo-config
+                - name: clientsecret
+                  secret:
+                      secretName: '{{ .Values.clientSecretName }}'
+                      defaultMode: 0444

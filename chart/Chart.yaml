@@ -1,0 +1,16 @@
+apiVersion: v2
+name: paigo-prometheus-chart
+description: Helm configuration for prometheus to work with Paigo
+keywords:
+- paigo
+- billing
+- kubernetes
+type: application
+version: 1.0.0
+appVersion: '1.0.0'
+home: https://github.com/paigo-tech/paigo-prometheus
+sources:
+    - https://github.com/paigo-tech/paigo-prometheus
+maintainers:
+    - name: danielwasserlauf
+      email: daniel.wasserlauf@paigo.tech

@@ -1,0 +1,78 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+    name: paigo-config
+    namespace: '{{ .Values.namespace }}'
+data:
+    prometheus.yml: |-
+        global:
+            scrape_interval: 10m
+            scrape_timeout: 10s
+            evaluation_interval: 10m
+        scrape_configs:
+            - job_name: kubernetes-nodes-cadvisor
+              honor_timestamps: true
+              scrape_interval: 10m
+              scrape_timeout: 10s
+              metrics_path: /metrics
+              scheme: https
+              authorization:
+                  type: Bearer
+                  credentials_file: /var/run/secrets/kubernetes.io/serviceaccount/token
+              tls_config:
+                  ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+                  insecure_skip_verify: true
+              follow_redirects: true
+              enable_http2: true
+              relabel_configs:
+                  - separator: ;
+                    regex: __meta_kubernetes_node_label_(.+)
+                    replacement: $1
+                    action: labelmap
+                  - separator: ;
+                    regex: (.*)
+                    target_label: __address__
+                    replacement: kubernetes.default.svc:443
+                    action: replace
+                  - source_labels: [__meta_kubernetes_node_name]
+                    separator: ;
+                    regex: (.+)
+                    target_label: __metrics_path__
+                    replacement: /api/v1/nodes/$1/proxy/metrics/cadvisor
+                    action: replace
+              metric_relabel_configs:
+                  - source_labels: [__name__]
+                    regex: '(container_cpu_usage_seconds_total|container_fs_reads_bytes_total|container_fs_writes_bytes_total|container_memory_max_usage_bytes|container_network_receive_bytes_total|container_network_transmit_bytes_total)'
+                    action: keep
+              kubernetes_sd_configs:
+                  - role: node
+                    kubeconfig_file: ''
+                    follow_redirects: true
+                    enable_http2: true
+            - job_name: 'kube-state-metrics'
+              scrape_interval: 3m
+              static_configs:
+                - targets: ['kube-state-metrics.kube-system.svc.cluster.local:8080']
+              metric_relabel_configs:
+                - source_labels: [__name__]
+                  regex: '(kube_pod_labels|kube_pod_container_status_running|kube_pod_info)'
+                  action: keep
+        remote_write:
+            - url: {{ .Values.remoteWriteURL }}
+              remote_timeout: 30s
+              follow_redirects: true
+              enable_http2: true
+              oauth2:
+                  token_url: https://auth.paigo.tech/oauth/token
+                  client_id: {{ .Values.clientID }} 
+                  client_secret_file: /etc/clientsecret/clientSecret
+              queue_config:
+                  capacity: 2500
+                  max_shards: 200
+                  min_shards: 1
+                  max_samples_per_send: 1000
+                  batch_send_deadline: 60s
+                  min_backoff: 30ms
+                  max_backoff: 10s
+              metadata_config:
+                  send: false
