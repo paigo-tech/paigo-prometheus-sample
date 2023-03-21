@@ -1,4 +1,4 @@
-# paigo-prometheus
+# paigo-prometheus-sample
 
 This repository contains instructions to use agent-based usage measurement and collection of Paigo.
 Specifically, there are two components to set up:
